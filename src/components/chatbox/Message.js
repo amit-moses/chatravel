@@ -1,4 +1,6 @@
-function Message({ my_message }) {
+import { format } from "date-fns";
+function Message({ my_message, msgData }) {
+  const my_date = new Date(msgData.time);
   return (
     <div className={my_message ? "chat" : "chat-left"}>
       <div className="chat-avatar">
@@ -12,9 +14,9 @@ function Message({ my_message }) {
       </div>
       <div className="chat-body">
         <div className="chat-content" style={{maxWidth:"75%"}}>
-          <p>If necessary, please askase askase askase askase askase askase askase askase askase askase askase askase askase askase askase askase askase askase askase askase askase askase askase askase askase askase askase askase askase askase askase askase askase askase askase askase askase ask me.</p>
-          <time className={my_message? "chat-time d-flex":"chat-time d-flex justify-content-end"} datetime="2015-07-01T11:40">
-            11:40:10 am
+          <p>{msgData.message}</p>
+          <time className={my_message? "chat-time d-flex":"chat-time d-flex justify-content-end"}>
+            {format(my_date, "kk:mm")}
           </time>
         </div>
       </div>

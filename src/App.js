@@ -1,56 +1,105 @@
-import { useEffect, useState } from 'react';
-import { db } from './firebase';
-import { collection, onSnapshot } from 'firebase/firestore';
+import { useEffect, useState } from "react";
+import { db, getCurrentUser, logout } from "./firebase";
+import {
+  collection,
+  onSnapshot,
+  orderBy,
+  query,
+  where,
+} from "firebase/firestore";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Chat from './components/chatbox/Chat';
-
-
+import Chat from "./components/chatbox/Chat";
+import Register from "./components/user/Register";
+import Login from "./components/user/Login";
 
 function App() {
-  const [colorData, setColorData] = useState([]);
+  const [currentUser, setUser] = useState(false);
+  const [msgData, setMsgData] = useState([]);
+  const [refresh, setrefresh] = useState(0);
 
   useEffect(() => {
-    // Reference to the "color" collection
-    const colorCollection = collection(db, 'colors');
+    async function get_user() {
+      const MY_USER = await getCurrentUser();
+      setUser(MY_USER);
+      console.log(MY_USER);
+    }
+    get_user();
+  }, [refresh]);
 
-    // Create a function to handle updates and unsubscribe from the listener when the component unmounts
-    const unsubscribe = onSnapshot(colorCollection, (snapshot) => {
-      // Process the data from the Firestore snapshot
-      const newData = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      // Update the component state with the new data
-      setColorData(newData);
+  useEffect(() => {
+    if (currentUser) {
+      const msgQuery = query(
+        collection(db, "messages"),
+        where("destination", "==", currentUser.destination),
+        // where("date1", "<", currentUser.date1 - 1209600000),
+        orderBy("time")
+      );
+
+      function check_in(mydoc) {
+        if(mydoc.date1 >= currentUser.date1 && mydoc.date2 <= currentUser.date2){return true;}
+        else if(mydoc.date1 <= currentUser.date1 && mydoc.date2 <= currentUser.date2){return true;}
+        else if (mydoc.date1 < currentUser.date2 && mydoc.date2 > currentUser.date2){return true;}
+        else{return false;}
+      }
+
+      const unsubscribe = onSnapshot(msgQuery, (snapshot) => {
+        const newData = [];
+        snapshot.docs.forEach((doc) => {
+          const data = {
+            id: doc.id,
+            ...doc.data(),
+          };
+          if (check_in(data)) {
+            newData.push(data);
+          }
+        });
+        setMsgData(newData);
+      });
+      return () => unsubscribe();
+    }
+  }, [currentUser]);
+
+  function refi() {
+    const newref = refresh + 1;
+    setrefresh(newref);
+  }
+
+  function sign_out() {
+    logout().then((res) => {
+      if (res) {
+        refi();
+      }
     });
-
-    // Clean up the listener when the component unmounts
-    return () => unsubscribe();
-  }, []); // The empty dependency array ensures the effect runs only once
-
-  // Render your component with the updated state
+  }
   return (
-  //   <div>
-  //   <h1>Colors:</h1>
-  //   {colorData.map((color) => (
-  //     <h1 key={color.id}>{color.name}</h1>
-  //   ))}
-  // </div>
-
-
-  <BrowserRouter>
+    <BrowserRouter>
       <Routes>
         <Route
           path="/"
-          element={<></>}
+          element={
+            <div>
+              {currentUser ? (
+                <>
+                  <h1>{currentUser.name}</h1>
+                  <button onClick={() => sign_out()}>logout</button>
+                </>
+              ) : (
+                ""
+              )}
+              {msgData.map((msg) => (
+                <h4 key={msg.id}>{msg.message}</h4>
+              ))}
+            </div>
+          }
         />
         <Route
           path="/chat"
-          element={<Chat/>}
+          element={<Chat my_messages={msgData} userdata={currentUser} />}
         />
+        <Route path="/reg" element={<Register />} />
+        <Route path="/log" element={<Login />} />
       </Routes>
     </BrowserRouter>
-    
   );
 }
 
