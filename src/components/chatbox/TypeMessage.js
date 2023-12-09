@@ -19,12 +19,11 @@ function TypeMessage({ userdata }) {
       style={{
         bottom: "0%",
         margin: "10px 10px 0px 10px",
-        background: "white",
       }}
       className="fixed-bottom"
       role="alert"
     >
-      <form method="POST" onSubmit={(e)=>send(e)} className="custom-search" style={{ marginBottom: "15px" }}>
+      <form method="POST" onSubmit={(e)=>send(e)} className="custom-search" style={{ marginBottom: "15px", zIndex:"900" }}>
         <input
         value={my_message}
           onChange={(e) => setMessage(e.target.value)}

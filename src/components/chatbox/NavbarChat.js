@@ -1,11 +1,16 @@
 import { ImExit } from "react-icons/im";
-import { IoPersonAdd } from "react-icons/io5";
+import UsersShared from "./UsersShared";
 
 
-function NavbarChat() {
+function NavbarChat({myset, users}) {
+
   return (
     <nav className="navbar bg-light navbar-expand-lg fixed-top">
       <div className="container-fluid d-flex justify-content-between">
+      {/* <button className="btn btn-outline-dark">
+          <FaUsers />
+        </button> */}
+        <UsersShared myset={myset} users={users}/>
         <a className="navbar-brand" href="/">
           <img
             src="https://cdn-icons-png.flaticon.com/512/9131/9131529.png"
@@ -16,20 +21,9 @@ function NavbarChat() {
           />
           Bootstrap
         </a>
-        <div>
-          <button
-            style={{ marginRight: "2px" }}
-            className="btn btn-outline-dark"
-          >
-            <IoPersonAdd/>
-          </button>
-          <button
-            style={{ marginLeft: "2px" }}
-            className="btn btn-outline-dark"
-          >
-            <ImExit/>
-          </button>
-        </div>
+        <button className="btn btn-outline-dark">
+          <ImExit />
+        </button>
       </div>
     </nav>
   );

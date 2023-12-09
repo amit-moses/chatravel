@@ -11,6 +11,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Chat from "./components/chatbox/Chat";
 import Register from "./components/user/Register";
 import Login from "./components/user/Login";
+import UsersShared from "./components/chatbox/UsersShared";
 
 function App() {
   const [currentUser, setUser] = useState(false);
@@ -31,7 +32,8 @@ function App() {
       const msgQuery = query(
         collection(db, "messages"),
         where("destination", "==", currentUser.destination),
-        // where("date1", "<", currentUser.date1 - 1209600000),
+        // where("date1", "<=", currentUser.date2),
+        // where("date2", ">=", currentUser.date1),
         orderBy("time")
       );
 
@@ -98,6 +100,7 @@ function App() {
         />
         <Route path="/reg" element={<Register />} />
         <Route path="/log" element={<Login />} />
+        <Route path="/users" element={<UsersShared />} />
       </Routes>
     </BrowserRouter>
   );
