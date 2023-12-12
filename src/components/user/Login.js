@@ -1,15 +1,17 @@
 import { useState } from "react";
 import Loader from "../Loader";
-import {loginUser} from "../../firebase.js"
+import { loginUser } from "../../firebase.js";
 
-
-function Login() {
-    function login_func(){
-        loginUser("amitm747@gmail.com","123456");
-    }
+function Login({ refi }) {
+  function login_func() {
+    loginUser(ed_username, ed_password).then((res) => {
+      refi();
+    });
+  }
   const [ed_username, setUsername] = useState("");
   const [ed_password, setPassword] = useState("");
   const errMsg = false;
+
   return (
     <form
       method="POST"
@@ -27,12 +29,12 @@ function Login() {
       <div className="form-floating mb-3 mt-3">
         <input
           onChange={(e) => setUsername(e.target.value)}
-          type="username"
-          placeholder="Username"
+          type="email"
+          placeholder="Email"
           className="form-control"
           id="floatingInput"
         ></input>
-        <label htmlFor="floatingInput">Username</label>
+        <label htmlFor="floatingInput">Email</label>
       </div>
       <div className="form-floating mb-3">
         <input

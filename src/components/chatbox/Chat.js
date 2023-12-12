@@ -2,11 +2,11 @@ import NavbarChat from "./NavbarChat";
 import TypeMessage from "./TypeMessage";
 import "./chat.css";
 import Message from "./Message";
-import { useEffect, useState } from "react";
-import { db } from "../../firebase";
+import { useEffect, useRef, useState } from "react";
+import { db, logout } from "../../firebase";
 import { collection, getDocs, query, where } from "firebase/firestore";
 
-function Chat({ userdata, my_messages }) {
+function Chat({ userdata, my_messages, refi, setuser }) {
   const [allUsers, setUsers] = useState([]);
   useEffect(() => {
     if (userdata) {
@@ -14,16 +14,27 @@ function Chat({ userdata, my_messages }) {
         const usersQuery = query(
           collection(db, "users"),
           where("destination", "==", userdata.destination),
-          where("date1", ">", userdata.date1 - 1209600000),
+          where("date1", ">", userdata.date1 - 1209600000)
           // where("date2", ">=", userdata.date1)
         );
         const querySnapshot = await getDocs(usersQuery);
         const newData = [];
         function check_in(mydoc) {
-          if(mydoc.date1 >= userdata.date1 && mydoc.date2 <= userdata.date2){return true;}
-          else if(mydoc.date1 <= userdata.date1 && mydoc.date2 <= userdata.date2){return true;}
-          else if (mydoc.date1 < userdata.date2 && mydoc.date2 > userdata.date2){return true;}
-          else{return false;}
+          if (mydoc.date1 >= userdata.date1 && mydoc.date2 <= userdata.date2) {
+            return true;
+          } else if (
+            mydoc.date1 <= userdata.date1 &&
+            mydoc.date2 <= userdata.date2
+          ) {
+            return true;
+          } else if (
+            mydoc.date1 < userdata.date2 &&
+            mydoc.date2 > userdata.date2
+          ) {
+            return true;
+          } else {
+            return false;
+          }
         }
         querySnapshot.docs.forEach((doc) => {
           const data = {
@@ -41,26 +52,40 @@ function Chat({ userdata, my_messages }) {
   }, [userdata]);
 
   const [tushi, setTushi] = useState(true);
+  const bottomEl = useRef(null);
   useEffect(() => {
     window.scrollTo({
       top: document.body.scrollHeight,
       behavior: "smooth", // You can use 'auto' for instant scrolling
     });
-  }, [my_messages]);
+
+    if (bottomEl.current) {
+      bottomEl.current.scrollTop = bottomEl.current.scrollHeight;
+    }
+  }, [my_messages, bottomEl]);
 
   const containerStyle = {
-    position: "absolute",
+    // height: "100vh",
+    // position: "absolute",
     bottom: 0,
     left: 0,
     right: 0, // Enables vertical scrolling
   };
 
+  function sign_out() {
+    logout().then((res) => {
+      if (res) {
+        setuser()
+        refi();
+      }
+    });
+  }
   return (
-    <div style={containerStyle}>
-      <NavbarChat myset={setTushi} users={allUsers} />
-      <section className="py-5">
+    <div>
+      <NavbarChat myset={setTushi} users={allUsers} sign_out={sign_out} />
+      <section className="py-5" style={containerStyle}>
         <div className="panel-body">
-          <div className="chats">
+          <div className="chats" ref={bottomEl}>
             {my_messages.map((msg) => (
               <Message
                 msgData={msg}

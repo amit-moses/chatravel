@@ -1,49 +1,28 @@
 .custom-search {
   position: relative;
   width: 100%;
+  background-color: white;
 }
 .custom-search-input {
+    text-align: right;
   resize: none;
   max-height: 40px;
   height: 40px;
-  width: 100%;
+  width: calc(100% - 45px);
   border: 1px solid #ccc;
   border-radius: 100px;
-  padding: 10px 100px 10px 20px;
+  padding: 10px 10px 10px 20px;
   line-height: 1;
   box-sizing: border-box;
   outline: none;
 }
-.custom-search-botton {
-  position: absolute;
-  right: 3px;
-  top: 3px;
-  bottom: 3px;
-  border: 0;
-  background: #4796fd;
-  color: #fff;
-  outline: none;
-  margin: 0;
-  padding: 0 10px;
-  border-radius: 100px;
-  z-index: 2;
-}
-.custom-search {
-  position: relative;
-  width: 100%;
-}
-.custom-search-input {
-  width: 100%;
-  border: 1px solid #5e5e5e;
-  border-radius: 100px;
-  padding: 10px 100px 10px 20px;
-
-  box-sizing: border-box;
-  outline: none;
+.custom-search-input::placeholder{
+    text-align: right;
 }
 .custom-search-botton {
+    transform: rotateY(180deg); 
   position: absolute;
-  right: 5px;
+  left: 5px;
   top: 5px;
   bottom: 5px;
   border: 0;
@@ -51,9 +30,23 @@
   color: #fff;
   outline: none;
   margin: 0;
-  padding: 0 10px;
   border-radius: 100px;
 }
+.custom-add-botton {
+    position: absolute;
+    right: 5px;
+    top: 5px;
+    bottom: 5px;
+    border: 0;
+    background: #08a108;
+    color: #fff;
+    outline: none;
+    margin: 0;
+    padding-left: 5px;
+    border-radius: 100px;
+  }
+
+
 
 .chat-box {
     height: 100%;

@@ -1,4 +1,5 @@
 import { format } from "date-fns";
+import SendedPicture from "./SendedPicture";
 function Message({ my_message, msgData }) {
   const my_date = new Date(msgData.time);
   return (
@@ -14,7 +15,7 @@ function Message({ my_message, msgData }) {
       </div>
       <div className="chat-body">
         <div className="chat-content" style={{maxWidth:"75%"}}>
-          <p>{msgData.message}</p>
+          {msgData.picture ? <SendedPicture url={msgData.picture} idmsg={msgData.id}/>: <p>{msgData.message}</p>}
           <time className={my_message? "chat-time d-flex":"chat-time d-flex justify-content-end"}>
             {format(my_date, "kk:mm")}
           </time>

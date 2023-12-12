@@ -2,20 +2,27 @@ import { useState } from "react";
 import Loader from "../Loader";
 import {registerUser} from "../../firebase.js"
 
-function Register() {
-  const [ed_username, setUsername] = useState("");
-   const [er_username, setErUsername] = useState();
+function Register({refi}) {
+  const [ed_name, setname] = useState("");
+   const [er_name, setErname] = useState();
    const [ed_password, setPassword] = useState("");
    const [ed_repassword, setRePassword] = useState("");
    const [er_password, setErPassword] = useState("");
    const [ed_email, setEmail] = useState("");
    const [er_email, setErEmail] = useState("");
    function register_func(){
-    registerUser("amit@gmail.com","123456","amit","7/12/2023", "10/12/2023", 1, "1/12/2023");
+    if(valid_register()){
+      registerUser(ed_email,ed_password,ed_name,null , null, 0, null).then((res)=>{ 
+        console.log((res));
+        if(res){
+          refi();
+        }
+      });
+    }
    }
 
   function valid_register(){
-    setErUsername("");
+    setErname("");
     setErPassword("");
     setErEmail("");
     let valid = true;
@@ -28,22 +35,22 @@ function Register() {
         setErEmail("Invalid email address! ");
         valid=false;
     }
-    if(ed_username.length < 4){setErUsername("User must be at least 4 chars! ");valid=false;}
+    if(ed_name.length < 4){setErname("User must be at least 4 chars! ");valid=false;}
     return valid;
    }
 
   return (
     <form method="POST" onSubmit={(event) => {event.preventDefault(); if(true){register_func();}}}>
         <Loader loaderSize={10} isLoad={true}/>
-        {(er_username || er_email || er_password) && 
+        {(er_name || er_email || er_password) && 
           <div className="alert alert-danger" role="alert">
-            <div>{er_username}</div>
+            <div>{er_name}</div>
             <div>{er_password}</div>
             <div>{er_email}</div>
           </div>}
         <div className="form-floating mb-3 mt-3">
-          <input onChange={(e) => {setUsername(e.target.value); setErUsername();}} type="username" placeholder="Username" className={er_username?"form-control is-invalid":"form-control"} id="floatingInput"></input>
-          <label htmlFor="floatingInput">Username</label>
+          <input onChange={(e) => {setname(e.target.value); setErname();}} type="name" placeholder="name" className={er_name?"form-control is-invalid":"form-control"} id="floatingInput"></input>
+          <label htmlFor="floatingInput">name</label>
         </div>
         <div className="form-floating mb-3 mt-3">
           <input onChange={(e) => {setEmail(e.target.value); setErEmail();}} type="email" placeholder="Email" className={er_email?"form-control is-invalid":"form-control"} id="floatingInput1"></input>

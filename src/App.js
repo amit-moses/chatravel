@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { db, getCurrentUser, logout } from "./firebase";
+import { db, getCurrentUser } from "./firebase";
 import {
   collection,
   onSnapshot,
@@ -9,10 +9,8 @@ import {
 } from "firebase/firestore";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Chat from "./components/chatbox/Chat";
-import Register from "./components/user/Register";
-import Login from "./components/user/Login";
-import UsersShared from "./components/chatbox/UsersShared";
-
+import UserLog from "./components/user/UserLog";
+import Setting from "./components/user/Setting";
 function App() {
   const [currentUser, setUser] = useState(false);
   const [msgData, setMsgData] = useState([]);
@@ -26,7 +24,7 @@ function App() {
     }
     get_user();
   }, [refresh]);
-
+  
   useEffect(() => {
     if (currentUser) {
       const msgQuery = query(
@@ -38,10 +36,24 @@ function App() {
       );
 
       function check_in(mydoc) {
-        if(mydoc.date1 >= currentUser.date1 && mydoc.date2 <= currentUser.date2){return true;}
-        else if(mydoc.date1 <= currentUser.date1 && mydoc.date2 <= currentUser.date2){return true;}
-        else if (mydoc.date1 < currentUser.date2 && mydoc.date2 > currentUser.date2){return true;}
-        else{return false;}
+        if (
+          mydoc.date1 >= currentUser.date1 &&
+          mydoc.date2 <= currentUser.date2
+        ) {
+          return true;
+        } else if (
+          mydoc.date1 <= currentUser.date1 &&
+          mydoc.date2 <= currentUser.date2
+        ) {
+          return true;
+        } else if (
+          mydoc.date1 < currentUser.date2 &&
+          mydoc.date2 > currentUser.date2
+        ) {
+          return true;
+        } else {
+          return false;
+        }
       }
 
       const unsubscribe = onSnapshot(msgQuery, (snapshot) => {
@@ -66,41 +78,11 @@ function App() {
     setrefresh(newref);
   }
 
-  function sign_out() {
-    logout().then((res) => {
-      if (res) {
-        refi();
-      }
-    });
-  }
   return (
     <BrowserRouter>
       <Routes>
-        <Route
-          path="/"
-          element={
-            <div>
-              {currentUser ? (
-                <>
-                  <h1>{currentUser.name}</h1>
-                  <button onClick={() => sign_out()}>logout</button>
-                </>
-              ) : (
-                ""
-              )}
-              {msgData.map((msg) => (
-                <h4 key={msg.id}>{msg.message}</h4>
-              ))}
-            </div>
-          }
-        />
-        <Route
-          path="/chat"
-          element={<Chat my_messages={msgData} userdata={currentUser} />}
-        />
-        <Route path="/reg" element={<Register />} />
-        <Route path="/log" element={<Login />} />
-        <Route path="/users" element={<UsersShared />} />
+        <Route path="/" element={currentUser? <Chat my_messages={msgData} userdata={currentUser} refi={refi} setuser={setUser} />: <UserLog refi={refi} user={currentUser} />} />
+        <Route path="/chat" element={<Setting userdata={currentUser}/>} />
       </Routes>
     </BrowserRouter>
   );
